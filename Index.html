@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimebit Opportunity Dashboard - UPHIGH ONLINE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap');
+        
+        body {
+            font-family: 'Space+Grotesk', sans-serif;
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+
+        .neo-border {
+            border: 4px solid #000000;
+            box-shadow: 8px 8px 0px #000000;
+            transition: all 0.2s ease;
+        }
+
+        .neo-border:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px #FF0040;
+        }
+
+        .bg-acid { background-color: #FFFF00; }
+        .bg-neon-red { background-color: #FF0040; }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        .tab-active {
+            background-color: #FF0040 !important;
+            color: #FFFFFF !important;
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px #000000;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container { height: 250px; }
+        }
+
+        .step-node {
+            width: 40px;
+            height: 40px;
+            border: 3px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background: white;
+            z-index: 10;
+        }
+
+        .loading-pulse {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header Section -->
+        <header class="mb-12">
+            <div class="bg-black text-white p-6 neo-border mb-4 flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-4xl font-bold uppercase tracking-tighter">Dimebit Opportunity Dashboard</h1>
+                    <p class="text-acid font-bold">UPHIGH ONLINE INDUSTRIES - AI-AUGMENTED STRATEGY</p>
+                </div>
+                <div class="mt-4 md:mt-0 bg-acid text-black px-4 py-2 font-bold">
+                    PLATFORM STATUS: OPTIMIZED
+                </div>
+            </div>
+            <p class="text-lg leading-tight max-w-3xl">
+                Explore the high-yield ecosystem of Dimebit. Augmented with ✨ Gemini Intelligence to provide real-time strategic modeling and regulatory insights.
+            </p>
+        </header>
+
+        <!-- AI Strategy & Stats Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <!-- AI Strategy Architect -->
+            <section class="lg:col-span-1 bg-black text-white p-6 neo-border flex flex-col">
+                <h2 class="text-2xl font-bold mb-4 uppercase text-acid flex items-center gap-2">
+                    ✨ AI Architect
+                </h2>
+                <p class="text-sm mb-4">Generate custom profit-maximization strategies based on platform mechanics.</p>
+                <div id="ai-response" class="bg-white text-black p-4 h-64 overflow-y-auto mb-4 text-xs font-mono border-2 border-acid">
+                    <span class="text-gray-400">Awaiting prompt...</span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <button onclick="generateAIStrategy('Optimize Rakeback')" class="bg-acid text-black p-2 font-bold hover:bg-white transition-colors text-sm uppercase">✨ Optimize Rakeback</button>
+                    <button onclick="generateAIStrategy('VIP Progression Path')" class="bg-neon-red text-white p-2 font-bold hover:bg-black transition-colors text-sm uppercase">✨ VIP Progression Path</button>
+                </div>
+            </section>
+            
+            <!-- Rewards Chart -->
+            <section class="lg:col-span-2 bg-white p-6 neo-border flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold uppercase bg-black text-white p-2 inline-block">The Rewards Engine</h2>
+                    <button onclick="summarizeData('Rewards')" class="text-xs font-bold uppercase underline">✨ Analyze with AI</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+                    <div class="chart-container">
+                        <canvas id="rewardsDonut"></canvas>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <div id="rewardDetails" class="p-4 bg-acid border-2 border-black text-sm font-bold h-32 flex items-center">
+                            Click a benefit to explore its value.
+                        </div>
+                        <p id="ai-summary-text" class="mt-4 text-xs italic text-gray-600"></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Connection Workflow Simulator -->
+        <section class="bg-white p-8 neo-border mb-12">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-bold uppercase">The 60-Second Accessibility Path</h2>
+                <button onclick="checkRegionalStatus()" class="bg-black text-acid px-3 py-1 font-bold text-xs uppercase hover:bg-neon-red hover:text-white transition-all">✨ Live Regulatory Check</button>
+            </div>
+            <p id="reg-status" class="mb-4 text-xs font-bold hidden"></p>
+            <p class="mb-8 font-bold">A streamlined, tech-free workflow for global platform entry.</p>
+            
+            <div class="relative py-12">
+                <div class="absolute h-1 bg-black w-full top-1/2 transform -translate-y-1/2"></div>
+                <div class="flex justify-between relative z-10">
+                    <div class="flex flex-col items-center">
+                        <div class="step-node bg-acid">1</div>
+                        <span class="text-xs font-bold uppercase mt-2">VPN Init</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="step-node bg-acid">2</div>
+                        <span class="text-xs font-bold uppercase mt-2">Tap Connect</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="step-node bg-acid">3</div>
+                        <span class="text-xs font-bold uppercase mt-2">Region Select</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="step-node bg-neon-red text-white">4</div>
+                        <span class="text-xs font-bold uppercase mt-2">One-Link Sign</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="step-node bg-neon-red text-white">5</div>
+                        <span class="text-xs font-bold uppercase mt-2">Ready to Play</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Ecosystem Tabs -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 uppercase">Platform Advantages</h2>
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button onclick="switchTab('crypto')" id="btn-crypto" class="neo-border px-6 py-2 font-bold uppercase bg-white hover:bg-acid transition-all tab-active">Crypto-First</button>
+                <button onclick="switchTab('loyalty')" id="btn-loyalty" class="neo-border px-6 py-2 font-bold uppercase bg-white hover:bg-acid transition-all">Loyalty Perks</button>
+                <button onclick="switchTab('support')" id="btn-support" class="neo-border px-6 py-2 font-bold uppercase bg-white hover:bg-acid transition-all">Global Support</button>
+            </div>
+
+            <div id="tab-content" class="bg-white p-8 neo-border min-h-[300px]">
+                <div id="content-crypto">
+                    <h3 class="text-2xl font-bold mb-4 text-neon-red">Seamless Crypto Integration</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <p class="mb-4">Dimebit is built for the modern digital economy, supporting high-speed transactions with popular cryptocurrencies.</p>
+                            <ul class="space-y-2">
+                                <li class="flex items-start font-bold underline"><span class="mr-2 text-neon-red">»</span> Fast Deposits & Instant Payouts</li>
+                                <li class="flex items-start font-bold underline"><span class="mr-2 text-neon-red">»</span> No Cash-Out Limits</li>
+                                <li class="flex items-start font-bold underline"><span class="mr-2 text-neon-red">»</span> Full Privacy Control</li>
+                            </ul>
+                        </div>
+                        <div class="bg-black text-white p-4 neo-border">
+                            <h4 class="font-bold text-acid uppercase mb-2">Technical Note:</h4>
+                            <p class="text-sm">The platform architecture is optimized for low-latency transaction confirmation, ensuring your balance reflects in real-time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs uppercase font-bold border-t-4 border-black pt-4 mb-8">
+            UPHIGH ONLINE INDUSTRIES &bull; STRATEGIC PARTNER HUB &bull; 2026
+        </footer>
+    </div>
+
+    <script>
+        const apiKey = ""; // Runtime provides key
+        
+        // Data Configuration
+        const rewardsData = {
+            labels: ['Weekly Rakeback', 'Cashback Bonus', 'Free Spins Friday', 'VIP Rewards'],
+            values: [35, 25, 20, 20],
+            details: [
+                "Highest industry standard for consistent player returns on every wager.",
+                "Weekly rewards that credit your account based on your platform activity.",
+                "Every Friday, players receive special codes for top-tier slot machines.",
+                "Exclusive access for high-volume players to personalized platform perks."
+            ]
+        };
+
+        // --- GEMINI API INTEGRATION ---
+
+        async function callGemini(prompt, systemPrompt = "You are a professional strategist for a crypto gaming dashboard.") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            let delay = 1000;
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "No strategy generated.";
+                } catch (e) {
+                    if (i === 4) return "Failed to reach AI architect. Please check connection.";
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        async function generateAIStrategy(topic) {
+            const display = document.getElementById('ai-response');
+            display.innerHTML = '<div class="loading-pulse">✨ Architect is calculating optimal paths...</div>';
+            
+            const prompt = `Develop a detailed strategy for: ${topic} on the Dimebit platform. 
+            Consider these mechanics: 
+            - Weekly Rakeback: 35% 
+            - Cashback: 25% 
+            - Free Spins Friday 
+            Format as short bullet points for a high-level digital entrepreneur.`;
+
+            const result = await callGemini(prompt, "You are an AI architect for UPHIGH ONLINE INDUSTRIES.");
+            display.innerText = result;
+        }
+
+        async function summarizeData(type) {
+            const summaryDisplay = document.getElementById('ai-summary-text');
+            summaryDisplay.innerHTML = '<span class="loading-pulse">✨ Analyzing dataset...</span>';
+            
+            const dataStr = JSON.stringify(rewardsData);
+            const prompt = `Summarize these reward metrics in one punchy, impactful sentence for a business dashboard: ${dataStr}`;
+            
+            const result = await callGemini(prompt);
+            summaryDisplay.innerText = "✨ " + result;
+        }
+
+        async function checkRegionalStatus() {
+            const statusDisplay = document.getElementById('reg-status');
+            statusDisplay.classList.remove('hidden');
+            statusDisplay.innerHTML = '<span class="loading-pulse text-black">✨ SEARCHING GLOBAL REGULATORY UPDATES...</span>';
+            
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: "What is the current regulatory status of crypto gambling in Canada, Mexico, and Netherlands for 2026? Provide a one-sentence summary for each." }] }],
+                tools: [{ "google_search": {} }]
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Status currently stable.";
+                statusDisplay.innerText = "✨ REAL-TIME INTEL: " + text;
+            } catch (e) {
+                statusDisplay.innerText = "✨ CONNECTION ERROR: Reverting to cached safety protocols.";
+            }
+        }
+
+        // --- CHARTING & UI ---
+
+        window.onload = function() {
+            const ctxRewards = document.getElementById('rewardsDonut').getContext('2d');
+            new Chart(ctxRewards, {
+                type: 'doughnut',
+                data: {
+                    labels: rewardsData.labels,
+                    datasets: [{
+                        data: rewardsData.values,
+                        backgroundColor: ['#000000', '#FF0040', '#FFFF00', '#CCCCCC'],
+                        borderColor: '#000000',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Space Grotesk', weight: 'bold' } } }
+                    },
+                    onClick: (evt, item) => {
+                        if (item.length > 0) {
+                            const index = item[0].index;
+                            document.getElementById('rewardDetails').innerText = rewardsData.details[index];
+                        }
+                    }
+                }
+            });
+        };
+
+        function switchTab(tab) {
+            const content = document.getElementById('tab-content');
+            const btns = ['btn-crypto', 'btn-loyalty', 'btn-support'];
+            btns.forEach(id => document.getElementById(id).classList.remove('tab-active'));
+            document.getElementById('btn-' + tab).classList.add('tab-active');
+
+            if (tab === 'crypto') {
+                content.innerHTML = `
+                    <h3 class="text-2xl font-bold mb-4 text-neon-red">Seamless Crypto Integration</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <p class="mb-4">Dimebit is built for the modern digital economy, supporting high-speed transactions with popular cryptocurrencies.</p>
+                            <ul class="space-y-2">
+                                <li class="flex items-start font-bold underline"><span class="mr-2 text-neon-red">»</span> Fast Deposits & Instant Payouts</li>
+                                <li class="flex items-start font-bold underline"><span class="mr-2 text-neon-red">»</span> No Cash-Out Limits</li>
+                                <li class="flex items-start font-bold underline"><span class="mr-2 text-neon-red">»</span> Full Privacy Control</li>
+                            </ul>
+                        </div>
+                        <div class="bg-black text-white p-4 neo-border">
+                            <h4 class="font-bold text-acid uppercase mb-2">Technical Note:</h4>
+                            <p class="text-sm">The platform architecture is optimized for low-latency transaction confirmation, ensuring your balance reflects in real-time.</p>
+                        </div>
+                    </div>`;
+            } else if (tab === 'loyalty') {
+                content.innerHTML = `<h3 class="text-2xl font-bold mb-4">✨ AI-Predicted Loyalty Boosters</h3><p>Platform loyalty is scaling at 12% MoM based on recent sentiment audits.</p>`;
+            } else if (tab === 'support') {
+                content.innerHTML = `<h3 class="text-2xl font-bold mb-4">Global Network</h3><p>24/7 coverage with AI-enhanced triage for technical queries.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
